@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Add your head content here -->
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard</title>
+
+  <!-- Add your CSS styles or link to an external stylesheet if needed -->
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <style>
+    /* Add your styles here */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .dashboard-container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .welcome-message {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .user-info {
+      margin-bottom: 20px;
+      color: #555;
+    }
+
+    .section {
+      margin-top: 20px;
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
+    }
+
+    .reservations-container {
+      margin-top: 20px;
+    }
+
+    .reservation-item {
+      margin-bottom: 10px;
+    }
+
+    .reserve-button {
+      background-color: #3498db;
+      color: #fff;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .reserve-button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="dashboard-container">
+    <!-- Display a welcome message based on user's access level -->
+    <div class="welcome-message">
+      Welcome to Your Dashboard, <span id="usernamePlaceholder"></span>!
+    </div>
+
+    <!-- Display user information based on their access level -->
+    <div class="user-info">
+      <h2>User Information:</h2>
+      <ul>
+        <li><strong>User ID:</strong> 12345</li>
+        <li><strong>Username:</strong> <span id="usernameDisplay"></span></li>
+        <!-- Add more user-related information as needed -->
+      </ul>
+    </div>
+
+    <!-- View My Reservations Section -->
+    <div class="section">
+      <h2>View My Reservations</h2>
+      <div class="reservations-container" id="reservations-container">
+        <!-- Reservations will be displayed here -->
+      </div>
+    </div>
+
+    <!-- Reserve Property Section -->
+    <div class="section">
+      <h2>Reserve a Property</h2>
+      <button class="reserve-button" onclick="reserveProperty()">Reserve Property</button>
+    </div>
+  </div>
+
+  <script>
+    // Retrieve username from sessionStorage
+    var username = sessionStorage.getItem("user_username");
+
+    // Display username in the placeholder
+    document.getElementById("usernamePlaceholder").innerText = username;
+
+    // Display username in the user information section
+    document.getElementById("usernameDisplay").innerText = username;
+
+    // Display existing reservations from localStorage
+    document.addEventListener('DOMContentLoaded', function () {
+      // Get existing reservations from localStorage
+      var existingReservations = JSON.parse(localStorage.getItem('reservations')) || [];
+
+      // Get the container where reservations will be displayed
+      var reservationsContainer = document.getElementById('reservations-container');
+
+      // Display each reservation
+      existingReservations.forEach(function (reservation, index) {
+        var reservationItem = createReservationItem(reservation, index + 1);
+        reservationsContainer.appendChild(reservationItem);
+      });
+    });
+
+    // Function to create a reservation item HTML element
+    function createReservationItem(reservation, reservationNumber) {
+      var reservationItem = document.createElement('div');
+      reservationItem.classList.add('reservation-item');
+      reservationItem.innerHTML = `
+        <p><strong>Reservation ${reservationNumber}:</strong></p>
+        <p><strong>Title:</strong> ${reservation.title}</p>
+        <p><strong>Location:</strong> ${reservation.location}</p>
+        <!-- Add more details as needed -->
+        <hr>
+      `;
+      return reservationItem;
+    }
+
+    // Function to reserve a property
+    function reserveProperty() {
+      // Replace this with your logic to get property details
+      var title = prompt('Enter Property Title:');
+      var location = prompt('Enter Property Location:');
+
+      // Ensure the user entered valid data
+      if (title && location) {
+        // Create a reservation object
+        var reservation = { title: title, location: location };
+
+        // Get existing reservations from localStorage
+        var existingReservations = JSON.parse(localStorage.getItem('reservations')) || [];
+
+        // Add the reservation to the existing reservations
+        existingReservations.push(reservation);
+
+        // Update localStorage with the new reservations
+        localStorage.setItem('reservations', JSON.stringify(existingReservations));
+
+        // Display the new reservation in the View My Reservations section
+        var reservationsContainer = document.getElementById('reservations-container');
+        var reservationItem = createReservationItem(reservation, existingReservations.length);
+        reservationsContainer.appendChild(reservationItem);
+
+        // Optionally, you can update other parts of the UI or display a success message
+        alert("Property reserved successfully!");
+      } else {
+        alert("Invalid data. Please enter valid property details.");
+      }
+    }
+  </script>
+
+</body>
+
+</html>

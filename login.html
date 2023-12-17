@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-image: url('https://e0.pxfuel.com/wallpapers/667/98/desktop-wallpaper-login-background-outlook-login.jpg');
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      max-width: 400px;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .logo-icon {
+      width: 100px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 1.5em;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      color: #555;
+    }
+
+    input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px;
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      margin-top: 15px;
+      font-size: 0.9em;
+    }
+
+    a {
+      text-decoration: none;
+      color: #3498db;
+      font-weight: bold;
+      margin-top: 15px;
+      font-size: 0.9em;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <img src="https://se-developers.com/wp-content/uploads/2023/08/New-SED_Horizontal_Logo.png" alt="Logo" class="logo-icon">
+    <h2>Login</h2>
+
+    <form id="loginForm">
+      <div>
+        <label for="identifier">Username or Email:</label>
+        <input type="text" id="identifier" required>
+      </div>
+
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" required>
+      </div>
+
+      <button type="button" onclick="login()">Login</button>
+
+      <p id="errorMessage" class="error-message"></p>
+
+      <!-- Link to the Register page -->
+      <p>Don't have an account? <a href="register.html">Register here</a>.</p>
+    </form>
+  </div>
+
+  <script>
+    function login() {
+      var identifier = document.getElementById("identifier").value;
+      var password = document.getElementById("password").value;
+    
+      // Retrieve user data from localStorage
+      var userData = JSON.parse(localStorage.getItem(identifier));
+    
+      if (userData && userData.password === password) {
+        // Save user information in sessionStorage
+        sessionStorage.setItem("user_username", identifier);
+        sessionStorage.setItem("user_accessLevel", userData.accessLevel);
+    
+        // Redirect to the appropriate dashboard based on access level
+        if (userData.accessLevel === "admin") {
+          window.location.href = "admin-destination.html";
+        } else {
+          window.location.href = "index.html"; // Change to the appropriate index page
+        }
+      } else {
+        displayErrorMessage("Invalid username, email, or password. Please try again.");
+      }
+    }
+    
+  
+    function displayErrorMessage(message) {
+      var errorMessageElement = document.getElementById("errorMessage");
+      errorMessageElement.innerText = message;
+    }
+  </script>
+
+</body>
+
+</html>

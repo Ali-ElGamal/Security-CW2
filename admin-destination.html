@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Add your head content here -->
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Destination</title>
+
+  <!-- Add your CSS styles or link to an external stylesheet if needed -->
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <style>
+    /* Add your styles here */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .dashboard-container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .welcome-message {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .user-info {
+      margin-bottom: 20px;
+      color: #555;
+    }
+
+    .section {
+      margin-top: 20px;
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
+    }
+
+    .user-list-container {
+      margin-top: 20px;
+    }
+
+    .user-item {
+      margin-bottom: 10px;
+    }
+
+    .delete-button,
+    .change-access-button,
+    .logout-button {
+      background-color: #3498db;
+      color: #fff;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .delete-button:hover,
+    .change-access-button:hover,
+    .logout-button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="dashboard-container">
+    <!-- Display a welcome message based on user's access level -->
+    <div class="welcome-message">
+      Welcome to Admin Destination, <span id="usernamePlaceholder"></span>!
+    </div>
+
+    <!-- Display user information based on their access level -->
+    <div class="user-info">
+      <h2>User Information:</h2>
+      <ul>
+        <li><strong>User ID:</strong> 12345</li>
+        <li><strong>Username:</strong> <span id="usernameDisplay"></span></li>
+        <!-- Add more user-related information as needed -->
+      </ul>
+    </div>
+
+    <!-- View All Users Section (for Admin) -->
+    <div class="section">
+      <h2>View All Users</h2>
+      <div class="user-list-container" id="user-list-container">
+        <!-- Users will be displayed here -->
+      </div>
+    </div>
+
+    <!-- Admin Functions Section -->
+    <div class="section">
+      <h2>Admin Functions</h2>
+      <button class="delete-button" onclick="deleteUserPrompt()">Delete User</button>
+      <button class="change-access-button" onclick="changeUserAccessLevelPrompt()">Change User Access Level</button>
+      <button class="logout-button" onclick="logoutAdmin()">Logout</button>
+    </div>
+  </div>
+
+  <script>
+    // Retrieve username from sessionStorage
+    var username = sessionStorage.getItem("user_username");
+
+    // Display username in the placeholder
+    document.getElementById("usernamePlaceholder").innerText = username;
+
+    // Display username in the user information section
+    document.getElementById("usernameDisplay").innerText = username;
+
+    // Display all users from localStorage
+    document.addEventListener('DOMContentLoaded', function () {
+      displayAllUsers();
+    });
+
+    // Function to display all users (for Admin)
+    function displayAllUsers() {
+      // Get all users from localStorage
+      var allUsers = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (key !== "reservations" && key !== username) {
+          var userData = JSON.parse(localStorage.getItem(key));
+          allUsers.push({ username: key, accessLevel: userData.accessLevel });
+        }
+      }
+
+      // Get the container where users will be displayed
+      var userListContainer = document.getElementById('user-list-container');
+
+      // Display each user
+      allUsers.forEach(function (user, index) {
+        var userItem = createUserItem(user, index + 1);
+        userListContainer.appendChild(userItem);
+      });
+    }
+
+    // Function to create a user item HTML element
+    function createUserItem(user, userNumber) {
+      var userItem = document.createElement('div');
+      userItem.classList.add('user-item');
+      userItem.innerHTML = `
+        <p><strong>User ${userNumber}:</strong></p>
+        <p><strong>Username:</strong> ${user.username}</p>
+        <p><strong>Access Level:</strong> ${user.accessLevel}</p>
+        <!-- Add more details as needed -->
+        <hr>
+      `;
+      return userItem;
+    }
+
+    // Function to prompt for username and delete the user
+    function deleteUserPrompt() {
+      var userToDelete = prompt("Enter the username to delete:");
+      if (userToDelete) {
+        deleteUser(userToDelete);
+      } else {
+        alert("Invalid username. Please enter a valid username.");
+      }
+    }
+
+    // Function to prompt for username and change user access level
+    function changeUserAccessLevelPrompt() {
+      var userToChange = prompt("Enter the username to change access level:");
+      var newAccessLevel = prompt("Enter the new access level:");
+      if (userToChange && newAccessLevel) {
+        changeUserAccessLevel(userToChange, newAccessLevel);
+      } else {
+        alert("Invalid input. Please enter valid username and access level.");
+      }
+    }
+
+    // Function to delete a user
+    function deleteUser(username) {
+      // Check if the username exists
+      var existingUser = localStorage.getItem(username);
+
+      if (existingUser) {
+        // Remove the user from localStorage
+        localStorage.removeItem(username);
+
+        // Display success message or update UI accordingly
+        alert("User deleted successfully!");
+      } else {
+        // Display an error message if the user does not exist
+        alert("User not found. Please enter a valid username.");
+      }
+
+      // Optionally, you can refresh the user list or update other parts of the UI
+    }
+
+    // Function to change the access level of a user
+    function changeUserAccessLevel(username, newAccessLevel) {
+      // Check if the username exists
+      var existingUser = localStorage.getItem(username);
+
+      if (existingUser) {
+        // Update the access level in the user's data
+        var userData = JSON.parse(existingUser);
+        userData.accessLevel = newAccessLevel;
+
+        // Save the updated user data back to localStorage
+        localStorage.setItem(username, JSON.stringify(userData));
+
+        // Display success message or update UI accordingly
+        alert(`Access level for ${username} changed to ${newAccessLevel} successfully!`);
+      } else {
+        // Display an error message if the user does not exist
+        alert("User not found. Please enter a valid username.");
+      }
+
+      // Optionally, you can refresh the user list or update other parts of the UI
+    }
+
+    // Function to log out the admin
+    function logoutAdmin() {
+      // Clear the session storage
+      sessionStorage.clear();
+
+      // Redirect to the login page
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
+
+</html>

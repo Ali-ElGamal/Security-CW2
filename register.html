@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Add your styles here */
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-image: url('https://e0.pxfuel.com/wallpapers/667/98/desktop-wallpaper-login-background-outlook-login.jpg');
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      max-width: 400px;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .logo-icon {
+      width: 100px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 1.5em;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      color: #555;
+    }
+
+    input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px;
+      background-color: #27ae60;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #219d54;
+    }
+
+    .password-strength-meter {
+      display: flex;
+      gap: 2px;
+      margin-top: 10px;
+    }
+
+    .password-strength-meter span {
+      flex-grow: 1;
+      height: 5px;
+      margin-right: 2px;
+      border-radius: 2px;
+    }
+
+    .password-weak {
+      background-color: #ff6666;
+    }
+
+    .password-moderate {
+      background-color: #ffd700;
+    }
+
+    .password-strong {
+      background-color: #5cb85c;
+    }
+
+    .password-requirements {
+      text-align: left;
+      margin-top: 10px;
+      color: #555;
+      font-size: 0.8em;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      margin-top: 15px;
+      font-size: 0.9em;
+    }
+
+    .success-message {
+      color: #27ae60;
+      margin-top: 15px;
+      font-size: 0.9em;
+    }
+
+    a {
+      text-decoration: none;
+      color: #3498db;
+      font-weight: bold;
+      margin-top: 15px;
+      font-size: 0.9em;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <img src="https://se-developers.com/wp-content/uploads/2023/08/New-SED_Horizontal_Logo.png" alt="Logo" class="logo-icon">
+    <h2>Register</h2>
+
+    <form id="registerForm">
+      <div>
+        <label for="newUsername">Username:</label>
+        <input type="text" id="newUsername" required>
+      </div>
+
+      <div>
+        <label for="newEmail">Email:</label>
+        <input type="email" id="newEmail" required>
+      </div>
+
+      <div>
+        <label for="newPassword">Password:</label>
+        <input type="password" id="newPassword" oninput="checkPasswordStrength()" required>
+        <div class="password-strength-meter">
+          <span id="weak" class="password-weak"></span>
+          <span id="moderate" class="password-moderate"></span>
+          <span id="strong" class="password-strong"></span>
+        </div>
+      </div>
+
+      <div>
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" id="confirmPassword" required>
+      </div>
+
+      <button type="button" onclick="register()">Register</button>
+
+      <p class="password-requirements">Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, one digit, and one special character.</p>
+      <p id="errorMessage" class="error-message"></p>
+      <p id="successMessage" class="success-message"></p>
+
+      <!-- Link to the Login page -->
+      <!-- Add this link to the Login page -->
+      <p><a href="login.html">Already have an account? Login here</a> or <a href="forgot-password.html">Forgot Password?</a></p>
+
+    </form>
+  </div>
+
+  <script>
+    function register() {
+      var newUsername = document.getElementById("newUsername").value;
+      var newEmail = document.getElementById("newEmail").value;
+      var newPassword = document.getElementById("newPassword").value;
+      var confirmPassword = document.getElementById("confirmPassword").value;
+
+      // Password strength regex
+      var strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+
+      if (!strongPasswordRegex.test(newPassword)) {
+        displayErrorMessage("Password does not meet the requirements. Please check the password criteria.");
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        displayErrorMessage("Passwords do not match. Please enter the same password in both fields.");
+        return;
+      }
+
+      // Check if the username is already taken (retrieve from storage)
+      var existingUserData = localStorage.getItem(newUsername);
+
+      if (existingUserData) {
+        displayErrorMessage("Username is already taken. Please choose another one.");
+        return;
+      }
+
+      // Check if the email is already taken or invalid
+      if (!isValidEmail(newEmail)) {
+        displayErrorMessage("Invalid email format. Please enter a valid email address.");
+        return;
+      }
+
+      existingUserData = localStorage.getItem(newEmail);
+
+      if (existingUserData) {
+        displayErrorMessage("Email is already registered. Please use another email address.");
+        return;
+      }
+
+      try {
+        // Determine access level based on the username
+        var accessLevel = newUsername.toLowerCase().includes('admin') ? 'admin' : 'user';
+
+        // Save the new user's data with the determined access level
+        var userData = { password: newPassword, email: newEmail, accessLevel: accessLevel };
+        localStorage.setItem(newUsername, JSON.stringify(userData));
+        localStorage.setItem(newEmail, JSON.stringify(userData));
+
+        displaySuccessMessage("Registration successful. Please login.");
+        window.location.href = "login.html";
+      } catch (error) {
+        console.error("Error during registration:", error);
+      }
+    }
+
+    function displayErrorMessage(message) {
+      var errorMessageElement = document.getElementById("errorMessage");
+      var successMessageElement = document.getElementById("successMessage");
+      errorMessageElement.innerText = message;
+      successMessageElement.innerText = "";
+    }
+
+    function displaySuccessMessage(message) {
+      var errorMessageElement = document.getElementById("errorMessage");
+      var successMessageElement = document.getElementById("successMessage");
+      errorMessageElement.innerText = "";
+      successMessageElement.innerText = message;
+    }
+
+    function checkPasswordStrength() {
+      var password = document.getElementById("newPassword").value;
+      var weak = document.getElementById("weak");
+      var moderate = document.getElementById("moderate");
+      var strong = document.getElementById("strong");
+
+      var strength = 0;
+
+      // Add your own password strength criteria
+      if (password.length >= 8) {
+        strength += 1;
+      }
+      if (password.match(/[a-z]+/)) {
+        strength += 1;
+      }
+      if (password.match(/[A-Z]+/)) {
+        strength += 1;
+      }
+      if (password.match(/[0-9]+/)) {
+        strength += 1;
+      }
+      if (password.match(/[@$!%*#?&]+/)) {
+        strength += 1;
+      }
+
+      if (strength <= 1) {
+        weak.style.backgroundColor = "#ff6666";
+        moderate.style.backgroundColor = "";
+        strong.style.backgroundColor = "";
+      } else if (strength === 2) {
+        weak.style.backgroundColor = "#ffd700";
+        moderate.style.backgroundColor = "#ffd700";
+        strong.style.backgroundColor = "";
+      } else {
+        weak.style.backgroundColor = "#5cb85c";
+        moderate.style.backgroundColor = "#5cb85c";
+        strong.style.backgroundColor = "#5cb85c";
+      }
+    }
+
+    function isValidEmail(email) {
+      // Basic email validation regex
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+  </script>
+
+</body>
+
+</html>
